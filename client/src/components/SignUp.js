@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Axois from "axios";
 import {
   Avatar,
   FormControl,
@@ -14,8 +15,26 @@ import { Container } from "@mui/system";
 import SensorOccupiedIcon from "@mui/icons-material/SensorOccupied";
 
 export default function SignUp() {
-  const handleSubmit = () => {
-    alert("handle submit");
+  const [form, setForm] = useState({
+    firstName: null,
+    lastName: null,
+    country: null,
+    email: null,
+    password: null,
+  });
+
+  const formHandler = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await Axois.post("/api/signup", { ...form });
+      console.log("res in axios", res.data);
+    } catch (err) {
+      console.log("error in axios", err);
+    }
   };
   return (
     <div>
@@ -53,35 +72,65 @@ export default function SignUp() {
                 <InputLabel htmlFor="firstName-input" sx={{ bgcolor: "white" }}>
                   First Name
                 </InputLabel>
-                <OutlinedInput id="firstName-input" type="text" required></OutlinedInput>
+                <OutlinedInput
+                  id="firstName-input"
+                  type="text"
+                  required
+                  name="firstName"
+                  onChange={formHandler}
+                ></OutlinedInput>
               </FormControl>
 
               <FormControl color="secondary">
                 <InputLabel htmlFor="lastName-input" sx={{ bgcolor: "white" }}>
                   Last Name
                 </InputLabel>
-                <OutlinedInput id="lastName-input" type="text" required></OutlinedInput>
+                <OutlinedInput
+                  id="lastName-input"
+                  type="text"
+                  required
+                  name="lastName"
+                  onChange={formHandler}
+                ></OutlinedInput>
               </FormControl>
 
               <FormControl color="secondary">
                 <InputLabel htmlFor="country-input" sx={{ bgcolor: "white" }}>
                   Country
                 </InputLabel>
-                <OutlinedInput id="country-input" type="text" required></OutlinedInput>
+                <OutlinedInput
+                  id="country-input"
+                  type="text"
+                  required
+                  name="country"
+                  onChange={formHandler}
+                ></OutlinedInput>
               </FormControl>
 
               <FormControl color="secondary">
                 <InputLabel htmlFor="email-input" sx={{ bgcolor: "white" }}>
                   Email
                 </InputLabel>
-                <OutlinedInput id="email-input" type="email" required></OutlinedInput>
+                <OutlinedInput
+                  id="email-input"
+                  type="email"
+                  required
+                  name="email"
+                  onChange={formHandler}
+                ></OutlinedInput>
               </FormControl>
 
               <FormControl color="secondary">
                 <InputLabel htmlFor="password-input" sx={{ bgcolor: "white" }}>
                   Password
                 </InputLabel>
-                <OutlinedInput id="password-input" type="password" required></OutlinedInput>
+                <OutlinedInput
+                  id="password-input"
+                  type="password"
+                  required
+                  name="password"
+                  onChange={formHandler}
+                ></OutlinedInput>
               </FormControl>
 
               <Button type="submit" color="secondary" variant="outlined" sx={{ maxWidth: "30%", margin: "0 auto" }}>

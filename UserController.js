@@ -7,6 +7,7 @@ const { SECRET } = require("./config/auth.config");
 
 // Sign up
 exports.signUp = function (req, res) {
+  console.log("signUp in controller and req is:", req.body);
   User.findOne({ email: req.body.email }).exec((err, data) => {
     if (err) {
       res.status(500).json({ error: err });
@@ -19,8 +20,8 @@ exports.signUp = function (req, res) {
     }
     const user = new User({
       name: {
-        firstName: req.body.name.firstName,
-        lastName: req.body.name.lastName,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
       },
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 8),
