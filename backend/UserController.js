@@ -1,13 +1,11 @@
-const { json } = require("body-parser");
-const e = require("express");
 const User = require("./UserModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { SECRET } = require("./config/auth.config");
+const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = require("./config/auth.config");
 
 // Sign up
 exports.signUp = function (req, res) {
-  console.log("signUp in controller and req is:", req.body);
+  console.log("req.body", req.body);
   User.findOne({ email: req.body.email }).exec((err, data) => {
     if (err) {
       res.status(500).json({ error: err });
@@ -27,6 +25,7 @@ exports.signUp = function (req, res) {
       password: bcrypt.hashSync(req.body.password, 8),
       createdAt: Date.now(),
       country: req.body.country,
+      refreshToken: "",
     });
 
     user.save((err, data) => {
@@ -40,6 +39,7 @@ exports.signUp = function (req, res) {
   });
 };
 
+// Sign in
 exports.signIn = function (req, res) {
   User.findOne({ email: req.body.email }).exec((err, data) => {
     if (err) {
@@ -47,7 +47,10 @@ exports.signIn = function (req, res) {
       return;
     }
 
-    console.log(data.password);
+    if (!data) {
+      res.status(401).json({ message: "Incorrect password or email" });
+      return;
+    }
 
     const correctPassword = bcrypt.compareSync(req.body.password, data.password);
 
@@ -56,8 +59,24 @@ exports.signIn = function (req, res) {
       return;
     }
 
-    const token = jwt.sign({ id: data.id }, SECRET, { expiresIn: 86400 });
+    const accessToken = jwt.sign(
+      {
+        email: data.email,
+      },
+      ACCESS_TOKEN_SECRET,
+      { expiresIn: "15s" }
+    );
 
-    res.status(200).json({ message: "User ia authentificated", token: token, email: data.email });
+    const refreshToken = jwt.sign({ email: data.email }, REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
+
+    User.updateOne({ email: data.email }, { refreshToken: refreshToken });
+
+    res.cookie("jwt_token", refreshToken, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.status(200).json({ message: "User ia authentificated", accessToken: accessToken });
   });
 };

@@ -23,12 +23,12 @@ app.use(bodyParser.json());
 //app.use(cors({ origin: "http://localhost:3000", credential: true }));
 app.use(cors());
 
-app.use(
-  cookieSession({
-    name: "session",
-    secret: SECRET,
-  })
-);
+// app.use(
+//   cookieSession({
+//     name: "session",
+//     secret: SECRET,
+//   })
+// );
 
 app.listen(PORT, () => {
   console.log(`Server is working on ${PORT} port`);

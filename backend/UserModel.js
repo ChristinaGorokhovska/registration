@@ -10,6 +10,7 @@ const UserSchema = mongoose.Schema({
   password: { type: String, required: true },
   createdAt: Date,
   country: String,
+  refreshToken: String,
 });
 
 const User = mongoose.model("user", UserSchema);
