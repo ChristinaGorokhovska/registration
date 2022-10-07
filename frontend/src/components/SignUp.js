@@ -1,18 +1,11 @@
 import React, { useState } from "react";
 import Axois from "axios";
-import {
-  Avatar,
-  FormControl,
-  FormGroup,
-  InputLabel,
-  Paper,
-  Typography,
-  Box,
-  OutlinedInput,
-  Button,
-} from "@mui/material";
+import { Avatar, FormControl, InputLabel, Paper, Typography, Box, OutlinedInput, Button } from "@mui/material";
 import { Container } from "@mui/system";
 import SensorOccupiedIcon from "@mui/icons-material/SensorOccupied";
+import { ReactNotifications } from "react-notifications-component";
+import "react-notifications-component/dist/theme.css";
+import { Store } from "react-notifications-component";
 
 export default function SignUp() {
   const [form, setForm] = useState({
@@ -31,13 +24,37 @@ export default function SignUp() {
     e.preventDefault();
     try {
       const res = await Axois.post("/api/signup", { ...form });
-      console.log("res in axios", res.data);
+      Notification(res.data.message, "default");
     } catch (err) {
-      console.log("error in axios", err);
+      console.log("error", err);
+      Notification(err.response.data.message || "Error", "danger");
     }
   };
+
+  const notificationsStyle = {
+    fontFamily: "sans-serif",
+  };
+
+  const Notification = (msg, type) => {
+    return Store.addNotification({
+      message: msg,
+      className: notificationsStyle.font,
+      type: type,
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 3000,
+        onScreen: true,
+        showIcon: true,
+      },
+    });
+  };
+
   return (
     <div>
+      <div style={notificationsStyle}>
+        <ReactNotifications></ReactNotifications>
+      </div>
       <Container>
         <Box>
           <Paper
