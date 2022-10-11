@@ -5,6 +5,7 @@ const apiRoutes = require("./routes");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
+const cookieParser = require("cookie-parser");
 const { HOST, PORT_DB, DB } = require("./config/db.config");
 const { SECRET } = require("./config/auth.config");
 const { PORT } = require("./config/server.config");
@@ -19,6 +20,7 @@ mongoose.connection.on("connected", () => console.log("Connected to db"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 //app.use(cors({ origin: "http://localhost:3000", credential: true }));
 app.use(cors());

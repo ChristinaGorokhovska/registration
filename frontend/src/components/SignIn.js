@@ -6,12 +6,14 @@ import SensorOccupiedIcon from "@mui/icons-material/SensorOccupied";
 import { ReactNotifications } from "react-notifications-component";
 import "react-notifications-component/dist/theme.css";
 import { Store } from "react-notifications-component";
+import { Navigate } from "react-router-dom";
 
 export default function SignIn() {
   const [form, setForm] = useState({
     email: null,
     password: null,
   });
+  const [navigate, setNavigate] = useState(false);
 
   const formHandler = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,13 +22,21 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await Axois.post("/api/signin", { ...form });
+      const res = await Axois.post("/api/signin", { ...form }, { withCredentials: true });
+      console.log(res);
+
+      Axois.defaults.headers.common["Authorization"] = `Bearer ${res.data.accessToken}`;
+
       Notification(res.data.message, "default");
     } catch (err) {
       console.log("error", err);
       Notification(err.response.data.message || "Error", "danger");
     }
+
+    setNavigate(true);
   };
+
+  if (navigate) return <Navigate to="/home" />;
 
   const notificationsStyle = {
     fontFamily: "sans-serif",
